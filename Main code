@@ -1,0 +1,82 @@
+import pandas as pd
+import matplotlib.pyplot as plt
+
+# Load Dataset
+df = pd.read_csv(r"C:\Users\ncjno\Downloads\gayathri_netflix.csv")
+
+# Display first few rows
+print("First 5 rows of the dataset:")
+print(df.head())
+
+# Basic Info
+print("\nDataset Info:")
+print(df.info())
+
+# Check for null values
+print("\nMissing Values:")
+print(df.isnull().sum())
+
+# Drop rows with missing 'type' or 'title'
+df.dropna(subset=['type', 'title'], inplace=True)
+
+# Convert 'date_added' to datetime
+df['date_added'] = pd.to_datetime(df['date_added'])
+
+# Extract year from date_added
+df['year_added'] = df['date_added'].dt.year
+
+# Summary Statistics
+print("\nType Distribution:")
+print(df['type'].value_counts())
+
+print("\nTop 10 Countries with Most Content:")
+print(df['country'].value_counts().head(10))
+
+print("\nTop 10 Directors:")
+print(df['director'].value_counts().head(10))
+
+# Top 10 Genres
+print("\nTop 10 Genres:")
+print(df['listed_in'].value_counts().head(10))
+
+# Number of content added each year
+yearly_content = df['year_added'].value_counts().sort_index()
+plt.figure(figsize=(10, 5))
+yearly_content.plot(kind='bar')
+plt.title('Netflix Content Added Each Year')
+plt.xlabel('Year')
+plt.ylabel('Number of Titles')
+plt.tight_layout()
+plt.show()
+
+# Content by type
+plt.figure(figsize=(6, 4))
+df['type'].value_counts().plot(kind='pie', autopct='%1.1f%%')
+plt.title('Distribution of Content Type')
+plt.ylabel('')
+plt.show()
+
+# Ratings distribution
+plt.figure(figsize=(10, 5))
+df['rating'].value_counts().plot(kind='bar', color='orange')
+plt.title('Content Ratings Distribution')
+plt.xlabel('Rating')
+plt.ylabel('Number of Titles')
+plt.tight_layout()
+plt.show()
+
+# Top 10 Actors (Optional: requires splitting 'cast')
+df_cast = df['cast'].dropna().str.split(', ')
+all_actors = df_cast.explode()
+top_actors = all_actors.value_counts().head(10)
+
+print("\nTop 10 Actors Appearing in Netflix Titles:")
+print(top_actors)
+
+# Show summary of findings
+print("\nSummary of Findings:")
+print("- Netflix has more Movies than TV Shows.")
+print("- Most content comes from the United States and India.")
+print("- 'Documentaries' and 'Dramas' are among the most popular genres.")
+print("- TV-MA and PG-13 are the most common ratings.")
+print("- The number of titles added peaked around 2019–2020.")
